@@ -113,6 +113,158 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/sql_EmployeeSalary')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "select \n    depname ,  SUM(salary) as totalsalary\nFROM\nOPENROWSET (\nBulk 'https://azuresynapsesushadlsgen2.dfs.core.windows.net/azuresynapsesushcontainer/synapsedemo/EmployeeSalary.txt',\nFormat= 'csv',\nHEADER_ROW = TRUE,\nPARSER_VERSION = '2.0'\n) as [RESULT]\nGROUP BY depname\n\n\n\n",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "master",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/sql_ExternalFileFormat')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "CREATE EXTERNAL FILE FORMAT ParquetfileFormat\nWITH\n(\n    FORMAT_TYPE = PARQUET,\n    DATA_COMPRESSION = 'org.apache.hadoop.io.compress.SnappyCodec'\n)\n",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "master",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/sql_ExternalTableDedicatedPool')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "CREATE EXTERNAL TABLE dbo.Dedicated_NYCTaxiTripSmall\n    (\n    DateID \tInt,\n    MedallionID Int\t,\n    HackneyLicenseID Int,\n    PickupTimeID\tInt,\n    DropoffTimeID\tInt,\n    PickupGeographyID\tInt,\n    DropoffGeographyID Int\t,\n    PickupLatitude float\t,\n    PickupLongitude float\t,\n    PickupLatLong nvarchar(4000),\n    DropoffLatitude\t float,\n    DropoffLongitude float\t,\n    DropoffLatLong nvarchar(4000)\t,\n    PassengerCount int\t,\n    TripDurationSeconds int\t,\n    TripDistanceMiles float\t,\n    PaymentType nvarchar(4000)\t,\n    FareAmount numeric(19,4)\t,\n    SurchargeAmount numeric(19,4)\t,\n    TaxAmount numeric(19,4)\t,\n    TipAmount numeric(19,4)\t,\n    TollsAmount\tnumeric(19,4),\n    TotalAmount\tnumeric(19,4)\n    )\nWITH\n    (\n        LOCATION = '/synapsedemo/NYCTripSmall.parquet',\n        DATA_SOURCE = sushadlsgen2,\n        FILE_FORMAT = SynapseParquetfileFormat     \n    )\nGO\n\n\n--  select top 10 * from dbo.Dedicated_NYCTaxiTripSmall\n\n-- Based on External table - you can copy data to Physical Table",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "master",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/sql_NYCTaxiSmallTrip')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "IF NOT EXISTS (SELECT * FROM sys.objects O JOIN sys.schemas S ON O.schema_id = S.schema_id WHERE O.NAME = 'NYCTaxiTripSmall' AND O.TYPE = 'U' AND S.NAME = 'dbo')\nCREATE TABLE dbo.NYCTaxiTripSmall\n    (\n    DateID \tInt,\n    MedallionID Int\t,\n    HackneyLicenseID Int,\n    PickupTimeID\tInt,\n    DropoffTimeID\tInt,\n    PickupGeographyID\tInt,\n    DropoffGeographyID Int\t,\n    PickupLatitude float\t,\n    PickupLongitude float\t,\n    PickupLatLong nvarchar(4000),\n    DropoffLatitude\t float,\n    DropoffLongitude float\t,\n    DropoffLatLong nvarchar(4000)\t,\n    PassengerCount int\t,\n    TripDurationSeconds int\t,\n    TripDistanceMiles float\t,\n    PaymentType nvarchar(4000)\t,\n    FareAmount numeric(19,4)\t,\n    SurchargeAmount numeric(19,4)\t,\n    TaxAmount numeric(19,4)\t,\n    TipAmount numeric(19,4)\t,\n    TollsAmount\tnumeric(19,4),\n    TotalAmount\tnumeric(19,4)\n    )\nWITH\n    (\n    DISTRIBUTION = ROUND_ROBIN,\n     CLUSTERED COLUMNSTORE INDEX\n     -- HEAP\n    )\nGO\n\nCOPY INTO dbo.NYCTaxiTripSmall\n(DateID 1,MedallionID 2,HackneyLicenseID 3,PickupTimeID 4,DropoffTimeID 5,\nPickupGeographyID 6,DropoffGeographyID 7,PickupLatitude 8,PickupLongitude 9,\nPickupLatLong 10,DropoffLatitude 11, DropoffLongitude 12,DropoffLatLong 13,PassengerCount 14,\nTripDurationSeconds 15,TripDistanceMiles 16,PaymentType 17,FareAmount 18,SurchargeAmount 19,\nTaxAmount 20,TipAmount 21,TollsAmount 22,TotalAmount 23\n )\nFROM 'https://azuresynapsesushadlsgen2.dfs.core.windows.net/azuresynapsesushcontainer/synapsedemo/NYCTripSmall.parquet'\nWITH\n(\n    FILE_TYPE = 'PARQUET'\n    ,MAXERRORS = 0\n    ,IDENTITY_INSERT = 'OFF'\n    ,AUTO_CREATE_TABLE ='ON'\n   )\n\n--  drop TABLE dbo.NYCTaxiTripSmall\n\n--  select count(*) from dbo.NYCTaxiTripSmall\n\n/* SELECT PassengerCount as PassengerCount,\n      SUM(TripDistanceMiles) as SumTripDistance_miles,\n      AVG(TripDistanceMiles) as AvgTripDistance_miles\nINTO dbo.PassengerCountStats\nFROM  dbo.NYCTaxiTripSmall\nWHERE TripDistanceMiles > 0 AND PassengerCount > 0\nGROUP BY PassengerCount;\n\nSELECT * FROM dbo.PassengerCountStats\nORDER BY PassengerCount;  */\n ",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "master",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/sql_externalNYCTaxiSmall')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "CREATE EXTERNAL DATA SOURCE [MyExternalDataSource]\nWITH (\n    TYPE = HADOOP,\n    LOCATION = 'https://azuresynapsesushadlsgen2.dfs.core.windows.net/azuresynapsesushcontainer/synapsedemo/NYCTripSmall.parquet'\n);\n\nCREATE EXTERNAL TABLE dbo.YourParquetTable\nWITH (\n    LOCATION = 'https://azuresynapsesushadlsgen2.dfs.core.windows.net/azuresynapsesushcontainer/synapsedemo/NYCTripSmall.parquet',\n    DATA_SOURCE = MyExternalDataSource,\n    FILE_FORMAT = ParquetFormat\n)\nAS SELECT * FROM OPENROWSET(\n    BULK 'https://azuresynapsesushadlsgen2.dfs.core.windows.net/azuresynapsesushcontainer/synapsedemo/NYCTripSmall.parquet',\n    DATA_SOURCE = 'MyExternalDataSource',\n    FORMAT='PARQUET'\n);\n",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "master",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/sql_generateExternalResources')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "use synapsesqldatabase\nGO\n\n--  create master key that will protect to credentials\nCREATE MASTER KEY ENCRYPTION BY PASSWORD = 'Welcome$1Hello@1'\n\n-- go to synapse resource group and ADLS storage account -- shared access signature -- click on all checkboxes\n-- service, container , object in allowed resource types \n-- click on Generate SAS and connection string button then copy SAS Token \n-- paste it in Secret as per shown below\nCREATE DATABASE SCOPED CREDENTIAL democredential\nWITH IDENTITY = 'SHARED ACCESS SIGNATURE',\n-- SECRET = 'sv=2022-11-02&ss=bfqt&srt=sco&sp=rwdlacupyx&se=2025-03-19T15:19:58Z&st=2025-03-19T07:19:58Z&spr=https&sig=GhfgxsNwbTrzwvf8wnmlPg1MX%2FARNsEYJKQCJ5M6I3Y%3D'\nSECRET = 'sv=2022-11-02&ss=bfqt&srt=sco&sp=rwdlacupyx&se=2025-03-19T19:57:07Z&st=2025-03-19T11:57:07Z&spr=https&sig=5jdwiN6%2FshQUecoy36zCEITHc9KytYweC9ouATUCoi4%3D'\nGO\n\n-- go to synapse resource group and ADLS storage account \n-- settings  -- Endpoints -- Data Lake Storage -- Primary End Point -- Copy and paste it as per below\n\n    CREATE EXTERNAL DATA SOURCE demoDataSource WITH (\n    LOCATION = 'https://azuresynapsesushadlsgen2.dfs.core.windows.net/' ,\n    CREDENTIAL = democredential\n\n\n)\n\n",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "master",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/sql_generateExternalResourcesDedicatedPool')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "CREATE MASTER KEY ENCRYPTION BY PASSWORD = 'Welcome$1Hello@1'\n\n-- DROP database SCOPED CREDENTIAL MSI_sushadlsgen2\n\nCREATE DATABASE SCOPED CREDENTIAL MSI_sushadlsgen2\nWITH IDENTITY = 'Managed Identity'\n\n-- go to synapse resource group and ADLS storage account \n-- settings  -- Endpoints -- Data Lake Storage -- Primary End Point -- Copy and paste it as per below\n\n    CREATE EXTERNAL DATA SOURCE sushadlsgen2 \n    WITH \n    (\n        --LOCATION = 'https://azuresynapsesushadlsgen2.dfs.core.windows.net/' ,  -- https -- not supported\n        --\n        LOCATION = 'abfss://azuresynapsesushcontainer@azuresynapsesushadlsgen2.dfs.core.windows.net',\n        CREDENTIAL = MSI_sushadlsgen2,\n        TYPE = HADOOP\n    )\n\n-- DROP external Data Source sushadlsgen2\n\n\n\nCREATE EXTERNAL FILE FORMAT SynapseParquetfileFormat\nWITH\n(\n    FORMAT_TYPE = PARQUET,\n    DATA_COMPRESSION = 'org.apache.hadoop.io.compress.SnappyCodec'\n)\n\n-- DROP external File format SynapseParquetfileFormat\n\n\nGO\n\n",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "master",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/dedicatedsushsqlpool')]",
+			"type": "Microsoft.Synapse/workspaces/sqlPools",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"collation": "SQL_Latin1_General_CP1_CI_AS",
+				"maxSizeBytes": 263882790666240,
+				"annotations": []
+			},
+			"dependsOn": [],
+			"location": "eastus"
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/sparkpool1')]",
 			"type": "Microsoft.Synapse/workspaces/bigDataPools",
 			"apiVersion": "2019-06-01-preview",
@@ -138,16 +290,88 @@
 			"location": "eastus"
 		},
 		{
-			"name": "[concat(parameters('workspaceName'), '/dedicatedsushsqlpool')]",
-			"type": "Microsoft.Synapse/workspaces/sqlPools",
+			"name": "[concat(parameters('workspaceName'), '/sql_top100PassengerCount')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
-				"collation": "SQL_Latin1_General_CP1_CI_AS",
-				"maxSizeBytes": 263882790666240,
-				"annotations": []
+				"content": {
+					"query": "SELECT TOP (100) [PassengerCount]\n,[SumTripDistance_miles]\n,[AvgTripDistance_miles]\n FROM [nyctaxi].[dbo].[passengercountstats]",
+					"metadata": {
+						"language": "sql"
+					}
+				}
 			},
-			"dependsOn": [],
-			"location": "eastus"
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/sql_tablePassengerCountStats')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "SELECT PassengerCount as PassengerCount,\n      SUM(TripDistanceMiles) as SumTripDistance_miles,\n      AVG(TripDistanceMiles) as AvgTripDistance_miles\nINTO dbo.PassengerCountStats\nFROM  dbo.NYCTaxiTripSmall\nWHERE TripDistanceMiles > 0 AND PassengerCount > 0\nGROUP BY PassengerCount;\n\nSELECT * FROM dbo.PassengerCountStats\nORDER BY PassengerCount;\n\n-- drop table dbo.PassengerCountStats",
+					"metadata": {
+						"language": "sql"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/sql_runfromdedicatedsqlpool')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "SELECT TOP (100) [DateID]\n,[MedallionID]\n,[HackneyLicenseID]\n,[PickupTimeID]\n,[DropoffTimeID]\n,[PickupGeographyID]\n,[DropoffGeographyID]\n,[PickupLatitude]\n,[PickupLongitude]\n,[PickupLatLong]\n,[DropoffLatitude]\n,[DropoffLongitude]\n,[DropoffLatLong]\n,[PassengerCount]\n,[TripDurationSeconds]\n,[TripDistanceMiles]\n,[PaymentType]\n,[FareAmount]\n,[SurchargeAmount]\n,[TaxAmount]\n,[TipAmount]\n,[TollsAmount]\n,[TotalAmount]\n FROM [dbo].[NYCTaxiTripSmall]",
+					"metadata": {
+						"language": "sql"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/sql_readParquetFileautoscript')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "-- This is auto-generated code\nSELECT\n    TOP 100 *\nFROM\n    OPENROWSET(\n        BULK 'https://azuresynapsesushadlsgen2.dfs.core.windows.net/azuresynapsesushcontainer/NYCTaxi/parquetfile/part-00000-ca9112b6-e14f-4e41-a0aa-5b4c3e7ec526-c000.snappy.parquet',\n        FORMAT = 'PARQUET'\n    ) AS [result]\n",
+					"metadata": {
+						"language": "sql"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/sql_readParquetCSVFile')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "--- Read Parquet File\n\nselect top 10 *\nfrom openrowset(\n    bulk 'https://azuresynapsesushadlsgen2.dfs.core.windows.net/azuresynapsesushcontainer/synapsedemo/NYCTripSmall.parquet',\n    format = 'parquet') as rows\n\n--- Read CSV File with limited column\n\n    select Top 10 *\n    from openrowset(\n    bulk 'https://azuresynapsesushadlsgen2.dfs.core.windows.net/azuresynapsesushcontainer/synapsedemo/Employees.csv',\n    format = 'csv',\n    PARSER_VERSION = '2.0',\n    HEADER_ROW = True\n    )\n    WITH\n    (\n        Emp_Id int, Dept_Id int, Salary int\n    )\n    as rows\n\n\n--- Read CSV File\n\n    select Top 10 *\n    from openrowset(\n    bulk 'https://azuresynapsesushadlsgen2.dfs.core.windows.net/azuresynapsesushcontainer/synapsedemo/Employees.csv',\n    format = 'csv',\n    PARSER_VERSION = '2.0',\n    HEADER_ROW = True\n    )    as rows\n\n\n    --- Read CSV File from Blob Storage \n    select Top 10 *\n    from openrowset(\n    bulk 'https://storageaccountadfsush.blob.core.windows.net/source/customerPurchases.csv',\n    format = 'csv',\n    PARSER_VERSION = '2.0',\n    HEADER_ROW = True\n    )    as rows\n",
+					"metadata": {
+						"language": "sql"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/sql_PersonHash')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "CREATE TABLE [dbo].[Person]\n(\n    id int NOT NULL,\n    name nvarchar(50)\n)\nWITH\n(\n    DISTRIBUTION = HASH (id),\n    CLUSTERED COLUMNSTORE INDEX\n)\nGO\n\n-- Drop table [dbo].[Table]\n\ninsert into [dbo].[Person] values (1,'Susmita')\ninsert into [dbo].[Person] values (2,'Pandit')\n\nselect * from Person\n",
+					"metadata": {
+						"language": "sql"
+					}
+				}
+			},
+			"dependsOn": []
 		}
 	]
 }
