@@ -1,0 +1,62 @@
+{
+	"name": "Notebook_txtbtnUI",
+	"properties": {
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"sessionProperties": {
+			"driverMemory": "28g",
+			"driverCores": 4,
+			"executorMemory": "28g",
+			"executorCores": 4,
+			"numExecutors": 2,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "2",
+				"spark.dynamicAllocation.maxExecutors": "2",
+				"spark.autotune.trackingId": "c0473baa-a93c-4859-9976-12e8376e4e6c"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"enableDebugMode": false,
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "python"
+			},
+			"language_info": {
+				"name": "python"
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "code",
+				"source": [
+					"from ipywidgets import widgets\n",
+					"\n",
+					"lbl1= widgets.Label(value='First Name')\n",
+					"display(lbl1)\n",
+					"txt1=widgets.Text()\n",
+					"display(txt1)\n",
+					"\n",
+					"lbl2= widgets.Label(value='Second Name')\n",
+					"display(lbl2)\n",
+					"txt2=widgets.Text()\n",
+					"display(txt2)\n",
+					"\n",
+					"btn= widgets.Button(description ='Get Full Name')\n",
+					"display(btn)\n",
+					"\n",
+					"lblFullname= widgets.Label()\n",
+					"display(lblFullname)\n",
+					"\n",
+					"def getfullname(b):\n",
+					"    lblFullname.value = 'Full Name is : ' + txt1.value + ' ' + txt2.value \n",
+					"\n",
+					"btn.on_click(getfullname)"
+				],
+				"execution_count": 4
+			}
+		]
+	}
+}
