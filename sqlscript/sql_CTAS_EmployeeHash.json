@@ -1,0 +1,17 @@
+{
+	"name": "sql_CTAS_EmployeeHash",
+	"properties": {
+		"content": {
+			"query": "CREATE TABLE [dbo].[Employees]\n(\n    empid int NOT NULL,\n    empname NVARCHAR(50),\n    gender NVARCHAR(10)\n)\nWITH\n(\n    DISTRIBUTION = HASH (empid),\n    CLUSTERED COLUMNSTORE INDEX\n)\nGO\n\n-- insert into Employees values (1, 'Maheer', 'Male')\n-- insert into Employees values (1, 'Ashi', 'Female')\n-- insert into Employees values (1, 'Wafa', 'Male')\n\n-- select * from [dbo].[Employees]",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "master",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

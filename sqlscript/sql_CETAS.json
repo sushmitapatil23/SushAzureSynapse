@@ -1,0 +1,17 @@
+{
+	"name": "sql_CETAS",
+	"properties": {
+		"content": {
+			"query": "CREATE EXTERNAL TABLE nyctaxi.CETASpassengercountstates \nWITH\n(\n    LOCATION= 'Synapsesqldatabase/NYCTaxi/Aggdata/',\n     DATA_SOURCE= demoDataSource,\n   -- DATA_SOURCE = azuresynapsesushcontainer_azuresynapsesushadlsgen2_dfs_core_windows_net,\n    FILE_FORMAT= ParquestfileFormat\n)\nAS\nSELECT PassengerCount as PassengerCount,\n      SUM(TripDistanceMiles) as SumTripDistance_miles,\n      AVG(TripDistanceMiles) as AvgTripDistance_miles\nFROM\nOPENROWSET(\n        BULK 'https://azuresynapsesushadlsgen2.dfs.core.windows.net/azuresynapsesushcontainer/synapsedemo/NYCTripSmall.parquet',\n        FORMAT = 'PARQUET'\n    ) AS [rows]\n\nWHERE TripDistanceMiles > 0 AND PassengerCount > 0\nGROUP BY PassengerCount;\t\n\nGO\n\n--  select * from nyctaxi.CETASpassengercountstates ",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "master",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

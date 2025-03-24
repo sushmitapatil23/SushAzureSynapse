@@ -1,0 +1,17 @@
+{
+	"name": "sql_CTAS_EmployeeRoundRobin",
+	"properties": {
+		"content": {
+			"query": "CREATE TABLE EmployeesNewExistingCTASEmployee\nWITH (\n    DISTRIBUTION = ROUND_ROBIN,\n    CLUSTERED COLUMNSTORE INDEX\n)\nAS\nSELECT * FROM Employees;\n\nGO\n\n-- SELECT * from EmployeesNewExistingCTASEmployee\n\n-- SELECT * INTO EmployeesNewExistingCTASEmployee2\n-- from EmployeesNewExistingCTASEmployee\n\n-- SELECT * from EmployeesNewExistingCTASEmployee2\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "master",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
