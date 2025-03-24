@@ -193,6 +193,26 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/sql_PersonHash')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "CREATE TABLE [dbo].[Person]\n(\n    id int NOT NULL,\n    name nvarchar(50)\n)\nWITH\n(\n    DISTRIBUTION = HASH (id),\n    CLUSTERED COLUMNSTORE INDEX\n)\nGO\n\n-- Drop table [dbo].[Table]\n\ninsert into [dbo].[Person] values (1,'Susmita')\ninsert into [dbo].[Person] values (2,'Pandit')\n\nselect * from Person\n",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "master",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/sql_externalNYCTaxiSmall')]",
 			"type": "Microsoft.Synapse/workspaces/sqlscripts",
 			"apiVersion": "2019-06-01-preview",
@@ -253,6 +273,106 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/sql_readParquetCSVFile')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "--- Read Parquet File\n\nselect top 10 *\nfrom openrowset(\n    bulk 'https://azuresynapsesushadlsgen2.dfs.core.windows.net/azuresynapsesushcontainer/synapsedemo/NYCTripSmall.parquet',\n    format = 'parquet') as rows\n\n--- Read CSV File with limited column\n\n    select Top 10 *\n    from openrowset(\n    bulk 'https://azuresynapsesushadlsgen2.dfs.core.windows.net/azuresynapsesushcontainer/synapsedemo/Employees.csv',\n    format = 'csv',\n    PARSER_VERSION = '2.0',\n    HEADER_ROW = True\n    )\n    WITH\n    (\n        Emp_Id int, Dept_Id int, Salary int\n    )\n    as rows\n\n\n--- Read CSV File\n\n    select Top 10 *\n    from openrowset(\n    bulk 'https://azuresynapsesushadlsgen2.dfs.core.windows.net/azuresynapsesushcontainer/synapsedemo/Employees.csv',\n    format = 'csv',\n    PARSER_VERSION = '2.0',\n    HEADER_ROW = True\n    )    as rows\n\n\n    --- Read CSV File from Blob Storage \n    select Top 10 *\n    from openrowset(\n    bulk 'https://storageaccountadfsush.blob.core.windows.net/source/customerPurchases.csv',\n    format = 'csv',\n    PARSER_VERSION = '2.0',\n    HEADER_ROW = True\n    )    as rows\n",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "master",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/sql_readParquetFileautoscript')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "-- This is auto-generated code\nSELECT\n    TOP 100 *\nFROM\n    OPENROWSET(\n        BULK 'https://azuresynapsesushadlsgen2.dfs.core.windows.net/azuresynapsesushcontainer/NYCTaxi/parquetfile/part-00000-ca9112b6-e14f-4e41-a0aa-5b4c3e7ec526-c000.snappy.parquet',\n        FORMAT = 'PARQUET'\n    ) AS [result]\n",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "master",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/sql_runfromdedicatedsqlpool')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "SELECT TOP (100) [DateID]\n,[MedallionID]\n,[HackneyLicenseID]\n,[PickupTimeID]\n,[DropoffTimeID]\n,[PickupGeographyID]\n,[DropoffGeographyID]\n,[PickupLatitude]\n,[PickupLongitude]\n,[PickupLatLong]\n,[DropoffLatitude]\n,[DropoffLongitude]\n,[DropoffLatLong]\n,[PassengerCount]\n,[TripDurationSeconds]\n,[TripDistanceMiles]\n,[PaymentType]\n,[FareAmount]\n,[SurchargeAmount]\n,[TaxAmount]\n,[TipAmount]\n,[TollsAmount]\n,[TotalAmount]\n FROM [dbo].[NYCTaxiTripSmall]",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "master",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/sql_tablePassengerCountStats')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "SELECT PassengerCount as PassengerCount,\n      SUM(TripDistanceMiles) as SumTripDistance_miles,\n      AVG(TripDistanceMiles) as AvgTripDistance_miles\nINTO dbo.PassengerCountStats\nFROM  dbo.NYCTaxiTripSmall\nWHERE TripDistanceMiles > 0 AND PassengerCount > 0\nGROUP BY PassengerCount;\n\nSELECT * FROM dbo.PassengerCountStats\nORDER BY PassengerCount;\n\n-- drop table dbo.PassengerCountStats",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "master",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/sql_top100PassengerCount')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "SELECT TOP (100) [PassengerCount]\n,[SumTripDistance_miles]\n,[AvgTripDistance_miles]\n FROM [nyctaxi].[dbo].[passengercountstats]",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "master",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/dedicatedsushsqlpool')]",
 			"type": "Microsoft.Synapse/workspaces/sqlPools",
 			"apiVersion": "2019-06-01-preview",
@@ -288,90 +408,6 @@
 			},
 			"dependsOn": [],
 			"location": "eastus"
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/sql_top100PassengerCount')]",
-			"type": "Microsoft.Synapse/workspaces/sqlscripts",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"content": {
-					"query": "SELECT TOP (100) [PassengerCount]\n,[SumTripDistance_miles]\n,[AvgTripDistance_miles]\n FROM [nyctaxi].[dbo].[passengercountstats]",
-					"metadata": {
-						"language": "sql"
-					}
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/sql_tablePassengerCountStats')]",
-			"type": "Microsoft.Synapse/workspaces/sqlscripts",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"content": {
-					"query": "SELECT PassengerCount as PassengerCount,\n      SUM(TripDistanceMiles) as SumTripDistance_miles,\n      AVG(TripDistanceMiles) as AvgTripDistance_miles\nINTO dbo.PassengerCountStats\nFROM  dbo.NYCTaxiTripSmall\nWHERE TripDistanceMiles > 0 AND PassengerCount > 0\nGROUP BY PassengerCount;\n\nSELECT * FROM dbo.PassengerCountStats\nORDER BY PassengerCount;\n\n-- drop table dbo.PassengerCountStats",
-					"metadata": {
-						"language": "sql"
-					}
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/sql_runfromdedicatedsqlpool')]",
-			"type": "Microsoft.Synapse/workspaces/sqlscripts",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"content": {
-					"query": "SELECT TOP (100) [DateID]\n,[MedallionID]\n,[HackneyLicenseID]\n,[PickupTimeID]\n,[DropoffTimeID]\n,[PickupGeographyID]\n,[DropoffGeographyID]\n,[PickupLatitude]\n,[PickupLongitude]\n,[PickupLatLong]\n,[DropoffLatitude]\n,[DropoffLongitude]\n,[DropoffLatLong]\n,[PassengerCount]\n,[TripDurationSeconds]\n,[TripDistanceMiles]\n,[PaymentType]\n,[FareAmount]\n,[SurchargeAmount]\n,[TaxAmount]\n,[TipAmount]\n,[TollsAmount]\n,[TotalAmount]\n FROM [dbo].[NYCTaxiTripSmall]",
-					"metadata": {
-						"language": "sql"
-					}
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/sql_readParquetFileautoscript')]",
-			"type": "Microsoft.Synapse/workspaces/sqlscripts",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"content": {
-					"query": "-- This is auto-generated code\nSELECT\n    TOP 100 *\nFROM\n    OPENROWSET(\n        BULK 'https://azuresynapsesushadlsgen2.dfs.core.windows.net/azuresynapsesushcontainer/NYCTaxi/parquetfile/part-00000-ca9112b6-e14f-4e41-a0aa-5b4c3e7ec526-c000.snappy.parquet',\n        FORMAT = 'PARQUET'\n    ) AS [result]\n",
-					"metadata": {
-						"language": "sql"
-					}
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/sql_readParquetCSVFile')]",
-			"type": "Microsoft.Synapse/workspaces/sqlscripts",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"content": {
-					"query": "--- Read Parquet File\n\nselect top 10 *\nfrom openrowset(\n    bulk 'https://azuresynapsesushadlsgen2.dfs.core.windows.net/azuresynapsesushcontainer/synapsedemo/NYCTripSmall.parquet',\n    format = 'parquet') as rows\n\n--- Read CSV File with limited column\n\n    select Top 10 *\n    from openrowset(\n    bulk 'https://azuresynapsesushadlsgen2.dfs.core.windows.net/azuresynapsesushcontainer/synapsedemo/Employees.csv',\n    format = 'csv',\n    PARSER_VERSION = '2.0',\n    HEADER_ROW = True\n    )\n    WITH\n    (\n        Emp_Id int, Dept_Id int, Salary int\n    )\n    as rows\n\n\n--- Read CSV File\n\n    select Top 10 *\n    from openrowset(\n    bulk 'https://azuresynapsesushadlsgen2.dfs.core.windows.net/azuresynapsesushcontainer/synapsedemo/Employees.csv',\n    format = 'csv',\n    PARSER_VERSION = '2.0',\n    HEADER_ROW = True\n    )    as rows\n\n\n    --- Read CSV File from Blob Storage \n    select Top 10 *\n    from openrowset(\n    bulk 'https://storageaccountadfsush.blob.core.windows.net/source/customerPurchases.csv',\n    format = 'csv',\n    PARSER_VERSION = '2.0',\n    HEADER_ROW = True\n    )    as rows\n",
-					"metadata": {
-						"language": "sql"
-					}
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('workspaceName'), '/sql_PersonHash')]",
-			"type": "Microsoft.Synapse/workspaces/sqlscripts",
-			"apiVersion": "2019-06-01-preview",
-			"properties": {
-				"content": {
-					"query": "CREATE TABLE [dbo].[Person]\n(\n    id int NOT NULL,\n    name nvarchar(50)\n)\nWITH\n(\n    DISTRIBUTION = HASH (id),\n    CLUSTERED COLUMNSTORE INDEX\n)\nGO\n\n-- Drop table [dbo].[Table]\n\ninsert into [dbo].[Person] values (1,'Susmita')\ninsert into [dbo].[Person] values (2,'Pandit')\n\nselect * from Person\n",
-					"metadata": {
-						"language": "sql"
-					}
-				}
-			},
-			"dependsOn": []
 		}
 	]
 }
