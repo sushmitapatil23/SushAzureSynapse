@@ -1,0 +1,17 @@
+{
+	"name": "sql_NYCTaxiSmallTrip",
+	"properties": {
+		"content": {
+			"query": "IF NOT EXISTS (SELECT * FROM sys.objects O JOIN sys.schemas S ON O.schema_id = S.schema_id WHERE O.NAME = 'NYCTaxiTripSmall' AND O.TYPE = 'U' AND S.NAME = 'dbo')\nCREATE TABLE dbo.NYCTaxiTripSmall\n    (\n    DateID \tInt,\n    MedallionID Int\t,\n    HackneyLicenseID Int,\n    PickupTimeID\tInt,\n    DropoffTimeID\tInt,\n    PickupGeographyID\tInt,\n    DropoffGeographyID Int\t,\n    PickupLatitude float\t,\n    PickupLongitude float\t,\n    PickupLatLong nvarchar(4000),\n    DropoffLatitude\t float,\n    DropoffLongitude float\t,\n    DropoffLatLong nvarchar(4000)\t,\n    PassengerCount int\t,\n    TripDurationSeconds int\t,\n    TripDistanceMiles float\t,\n    PaymentType nvarchar(4000)\t,\n    FareAmount numeric(19,4)\t,\n    SurchargeAmount numeric(19,4)\t,\n    TaxAmount numeric(19,4)\t,\n    TipAmount numeric(19,4)\t,\n    TollsAmount\tnumeric(19,4),\n    TotalAmount\tnumeric(19,4)\n    )\nWITH\n    (\n    DISTRIBUTION = ROUND_ROBIN,\n     CLUSTERED COLUMNSTORE INDEX\n     -- HEAP\n    )\nGO\n\nCOPY INTO dbo.NYCTaxiTripSmall\n(DateID 1,MedallionID 2,HackneyLicenseID 3,PickupTimeID 4,DropoffTimeID 5,\nPickupGeographyID 6,DropoffGeographyID 7,PickupLatitude 8,PickupLongitude 9,\nPickupLatLong 10,DropoffLatitude 11, DropoffLongitude 12,DropoffLatLong 13,PassengerCount 14,\nTripDurationSeconds 15,TripDistanceMiles 16,PaymentType 17,FareAmount 18,SurchargeAmount 19,\nTaxAmount 20,TipAmount 21,TollsAmount 22,TotalAmount 23\n )\nFROM 'https://azuresynapsesushadlsgen2.dfs.core.windows.net/azuresynapsesushcontainer/synapsedemo/NYCTripSmall.parquet'\nWITH\n(\n    FILE_TYPE = 'PARQUET'\n    ,MAXERRORS = 0\n    ,IDENTITY_INSERT = 'OFF'\n    ,AUTO_CREATE_TABLE ='ON'\n   )\n\n--  drop TABLE dbo.NYCTaxiTripSmall\n\n--  select count(*) from dbo.NYCTaxiTripSmall\n\n/* SELECT PassengerCount as PassengerCount,\n      SUM(TripDistanceMiles) as SumTripDistance_miles,\n      AVG(TripDistanceMiles) as AvgTripDistance_miles\nINTO dbo.PassengerCountStats\nFROM  dbo.NYCTaxiTripSmall\nWHERE TripDistanceMiles > 0 AND PassengerCount > 0\nGROUP BY PassengerCount;\n\nSELECT * FROM dbo.PassengerCountStats\nORDER BY PassengerCount;  */\n ",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "master",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

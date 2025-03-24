@@ -1,0 +1,17 @@
+{
+	"name": "sql_EmployeeSalary",
+	"properties": {
+		"content": {
+			"query": "select \n    depname ,  SUM(salary) as totalsalary\nFROM\nOPENROWSET (\nBulk 'https://azuresynapsesushadlsgen2.dfs.core.windows.net/azuresynapsesushcontainer/synapsedemo/EmployeeSalary.txt',\nFormat= 'csv',\nHEADER_ROW = TRUE,\nPARSER_VERSION = '2.0'\n) as [RESULT]\nGROUP BY depname\n\n\n\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "master",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

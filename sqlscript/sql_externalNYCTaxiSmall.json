@@ -1,0 +1,17 @@
+{
+	"name": "sql_externalNYCTaxiSmall",
+	"properties": {
+		"content": {
+			"query": "CREATE EXTERNAL DATA SOURCE [MyExternalDataSource]\nWITH (\n    TYPE = HADOOP,\n    LOCATION = 'https://azuresynapsesushadlsgen2.dfs.core.windows.net/azuresynapsesushcontainer/synapsedemo/NYCTripSmall.parquet'\n);\n\nCREATE EXTERNAL TABLE dbo.YourParquetTable\nWITH (\n    LOCATION = 'https://azuresynapsesushadlsgen2.dfs.core.windows.net/azuresynapsesushcontainer/synapsedemo/NYCTripSmall.parquet',\n    DATA_SOURCE = MyExternalDataSource,\n    FILE_FORMAT = ParquetFormat\n)\nAS SELECT * FROM OPENROWSET(\n    BULK 'https://azuresynapsesushadlsgen2.dfs.core.windows.net/azuresynapsesushcontainer/synapsedemo/NYCTripSmall.parquet',\n    DATA_SOURCE = 'MyExternalDataSource',\n    FORMAT='PARQUET'\n);\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "master",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

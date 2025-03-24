@@ -1,0 +1,17 @@
+{
+	"name": "sql_ExternalTableDedicatedPool",
+	"properties": {
+		"content": {
+			"query": "CREATE EXTERNAL TABLE dbo.Dedicated_NYCTaxiTripSmall\n    (\n    DateID \tInt,\n    MedallionID Int\t,\n    HackneyLicenseID Int,\n    PickupTimeID\tInt,\n    DropoffTimeID\tInt,\n    PickupGeographyID\tInt,\n    DropoffGeographyID Int\t,\n    PickupLatitude float\t,\n    PickupLongitude float\t,\n    PickupLatLong nvarchar(4000),\n    DropoffLatitude\t float,\n    DropoffLongitude float\t,\n    DropoffLatLong nvarchar(4000)\t,\n    PassengerCount int\t,\n    TripDurationSeconds int\t,\n    TripDistanceMiles float\t,\n    PaymentType nvarchar(4000)\t,\n    FareAmount numeric(19,4)\t,\n    SurchargeAmount numeric(19,4)\t,\n    TaxAmount numeric(19,4)\t,\n    TipAmount numeric(19,4)\t,\n    TollsAmount\tnumeric(19,4),\n    TotalAmount\tnumeric(19,4)\n    )\nWITH\n    (\n        LOCATION = '/synapsedemo/NYCTripSmall.parquet',\n        DATA_SOURCE = sushadlsgen2,\n        FILE_FORMAT = SynapseParquetfileFormat     \n    )\nGO\n\n\n--  select top 10 * from dbo.Dedicated_NYCTaxiTripSmall\n\n-- Based on External table - you can copy data to Physical Table",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "master",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

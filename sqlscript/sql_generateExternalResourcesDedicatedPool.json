@@ -1,0 +1,17 @@
+{
+	"name": "sql_generateExternalResourcesDedicatedPool",
+	"properties": {
+		"content": {
+			"query": "CREATE MASTER KEY ENCRYPTION BY PASSWORD = 'Welcome$1Hello@1'\n\n-- DROP database SCOPED CREDENTIAL MSI_sushadlsgen2\n\nCREATE DATABASE SCOPED CREDENTIAL MSI_sushadlsgen2\nWITH IDENTITY = 'Managed Identity'\n\n-- go to synapse resource group and ADLS storage account \n-- settings  -- Endpoints -- Data Lake Storage -- Primary End Point -- Copy and paste it as per below\n\n    CREATE EXTERNAL DATA SOURCE sushadlsgen2 \n    WITH \n    (\n        --LOCATION = 'https://azuresynapsesushadlsgen2.dfs.core.windows.net/' ,  -- https -- not supported\n        --\n        LOCATION = 'abfss://azuresynapsesushcontainer@azuresynapsesushadlsgen2.dfs.core.windows.net',\n        CREDENTIAL = MSI_sushadlsgen2,\n        TYPE = HADOOP\n    )\n\n-- DROP external Data Source sushadlsgen2\n\n\n\nCREATE EXTERNAL FILE FORMAT SynapseParquetfileFormat\nWITH\n(\n    FORMAT_TYPE = PARQUET,\n    DATA_COMPRESSION = 'org.apache.hadoop.io.compress.SnappyCodec'\n)\n\n-- DROP external File format SynapseParquetfileFormat\n\n\nGO\n\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "master",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

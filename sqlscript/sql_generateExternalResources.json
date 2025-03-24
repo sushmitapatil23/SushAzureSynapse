@@ -1,0 +1,17 @@
+{
+	"name": "sql_generateExternalResources",
+	"properties": {
+		"content": {
+			"query": "use synapsesqldatabase\nGO\n\n--  create master key that will protect to credentials\nCREATE MASTER KEY ENCRYPTION BY PASSWORD = 'Welcome$1Hello@1'\n\n-- go to synapse resource group and ADLS storage account -- shared access signature -- click on all checkboxes\n-- service, container , object in allowed resource types \n-- click on Generate SAS and connection string button then copy SAS Token \n-- paste it in Secret as per shown below\nCREATE DATABASE SCOPED CREDENTIAL democredential\nWITH IDENTITY = 'SHARED ACCESS SIGNATURE',\n-- SECRET = 'sv=2022-11-02&ss=bfqt&srt=sco&sp=rwdlacupyx&se=2025-03-19T15:19:58Z&st=2025-03-19T07:19:58Z&spr=https&sig=GhfgxsNwbTrzwvf8wnmlPg1MX%2FARNsEYJKQCJ5M6I3Y%3D'\nSECRET = 'sv=2022-11-02&ss=bfqt&srt=sco&sp=rwdlacupyx&se=2025-03-19T19:57:07Z&st=2025-03-19T11:57:07Z&spr=https&sig=5jdwiN6%2FshQUecoy36zCEITHc9KytYweC9ouATUCoi4%3D'\nGO\n\n-- go to synapse resource group and ADLS storage account \n-- settings  -- Endpoints -- Data Lake Storage -- Primary End Point -- Copy and paste it as per below\n\n    CREATE EXTERNAL DATA SOURCE demoDataSource WITH (\n    LOCATION = 'https://azuresynapsesushadlsgen2.dfs.core.windows.net/' ,\n    CREDENTIAL = democredential\n\n\n)\n\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "master",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
