@@ -1,0 +1,53 @@
+{
+	"name": "NotebookWriteFSSPEC",
+	"properties": {
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"sessionProperties": {
+			"driverMemory": "28g",
+			"driverCores": 4,
+			"executorMemory": "28g",
+			"executorCores": 4,
+			"numExecutors": 2,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "2",
+				"spark.dynamicAllocation.maxExecutors": "2",
+				"spark.autotune.trackingId": "81d0b718-7c69-48d5-8566-8e6c9bcc20f0"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"enableDebugMode": false,
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "python"
+			},
+			"language_info": {
+				"name": "python"
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "code",
+				"source": [
+					"import fsspec\n",
+					"import pandas\n",
+					"\n",
+					"adls_account_name = 'azuresynapsesushadlsgen2'\n",
+					"adls_account_key = 'kSfTLRaUy6CSNVEyDeViq0STEzBKJ1HEFRLDRNwnUSHgahT1zi7lSbpe+eygxmfWJOKsctqk1i0h+AStR0qNjg=='\n",
+					"\n",
+					"data = pandas.DataFrame({'id':[1,2,3,4], 'name':['Maheer','Wafa','sush','pandit']})\n",
+					"\n",
+					"fsspec_object = fsspec.open('abfss://azuresynapsesushcontainer/synapsedemo/EMP_WriteFSSPEC.csv',account_name = adls_account_name,account_key= adls_account_key, mode= 'wt')\n",
+					"\n",
+					"with fsspec_object.open() as f:\n",
+					"    data.to_csv(f)\n",
+					""
+				],
+				"execution_count": 16
+			}
+		]
+	}
+}
