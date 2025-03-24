@@ -671,6 +671,66 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/NotebookReadFSSPEC')]",
+			"type": "Microsoft.Synapse/workspaces/notebooks",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"nbformat": 4,
+				"nbformat_minor": 2,
+				"sessionProperties": {
+					"driverMemory": "28g",
+					"driverCores": 4,
+					"executorMemory": "28g",
+					"executorCores": 4,
+					"numExecutors": 2,
+					"conf": {
+						"spark.dynamicAllocation.enabled": "false",
+						"spark.dynamicAllocation.minExecutors": "2",
+						"spark.dynamicAllocation.maxExecutors": "2",
+						"spark.autotune.trackingId": "f75586a5-498c-4077-bc04-342ef74db10b"
+					}
+				},
+				"metadata": {
+					"saveOutput": true,
+					"enableDebugMode": false,
+					"kernelspec": {
+						"name": "synapse_pyspark",
+						"display_name": "python"
+					},
+					"language_info": {
+						"name": "python"
+					},
+					"sessionKeepAliveTimeout": 30
+				},
+				"cells": [
+					{
+						"cell_type": "code",
+						"metadata": {
+							"collapsed": false
+						},
+						"source": [
+							"import fsspec\n",
+							"import pandas\n",
+							"\n",
+							"adls_account_name = 'azuresynapsesushadlsgen2'\n",
+							"adls_account_key = 'kSfTLRaUy6CSNVEyDeViq0STEzBKJ1HEFRLDRNwnUSHgahT1zi7lSbpe+eygxmfWJOKsctqk1i0h+AStR0qNjg=='\n",
+							"\n",
+							"fsspec_object = fsspec.open('abfss://azuresynapsesushcontainer/synapsedemo/EMP_WriteFSSPEC.csv',account_name = adls_account_name,account_key= adls_account_key)\n",
+							"\n",
+							"with fsspec_object.open() as f:\n",
+							"    df=pandas.read_csv(f)\n",
+							"\n",
+							"    display(df)\n",
+							""
+						],
+						"outputs": [],
+						"execution_count": 18
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/NotebookReadWriteByPandas')]",
 			"type": "Microsoft.Synapse/workspaces/notebooks",
 			"apiVersion": "2019-06-01-preview",
@@ -687,7 +747,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "9572d2a6-e5b5-4ba5-a85f-430fb266833b"
+						"spark.autotune.trackingId": "2f0c70bb-8249-4ba7-8c6f-7771a441e89a"
 					}
 				},
 				"metadata": {
