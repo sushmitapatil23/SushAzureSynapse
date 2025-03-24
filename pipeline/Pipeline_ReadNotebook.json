@@ -1,0 +1,42 @@
+{
+    "name": "Pipeline_ReadNotebook",
+    "properties": {
+        "activities": [
+            {
+                "name": "Notebook_ReadByPipeline",
+                "type": "SynapseNotebook",
+                "dependsOn": [],
+                "policy": {
+                    "timeout": "0.12:00:00",
+                    "retry": 0,
+                    "retryIntervalInSeconds": 30,
+                    "secureOutput": false,
+                    "secureInput": false
+                },
+                "userProperties": [],
+                "typeProperties": {
+                    "notebook": {
+                        "referenceName": "Notebook_ReadByPipeline",
+                        "type": "NotebookReference"
+                    },
+                    "snapshot": true,
+                    "sparkPool": {
+                        "referenceName": "sparkpool1",
+                        "type": "BigDataPoolReference"
+                    },
+                    "executorSize": "Small",
+                    "driverSize": "Small"
+                }
+            }
+        ],
+        "parameters": {
+            "name": {
+                "type": "string",
+                "defaultValue": "Pandit"
+            }
+        },
+        "annotations": [],
+        "lastPublishTime": "2025-03-21T07:02:18Z"
+    },
+    "type": "Microsoft.Synapse/workspaces/pipelines"
+}
