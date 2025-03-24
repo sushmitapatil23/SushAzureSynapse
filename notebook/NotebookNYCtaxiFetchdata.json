@@ -1,0 +1,52 @@
+{
+	"name": "NotebookNYCtaxiFetchdata",
+	"properties": {
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"sessionProperties": {
+			"driverMemory": "28g",
+			"driverCores": 4,
+			"executorMemory": "28g",
+			"executorCores": 4,
+			"numExecutors": 2,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "2",
+				"spark.dynamicAllocation.maxExecutors": "2",
+				"spark.autotune.trackingId": "2e9aa532-f4d7-4a96-93ae-2936228e720c"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"enableDebugMode": false,
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "python"
+			},
+			"language_info": {
+				"name": "python"
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"df = spark.sql(\"\"\" SELECT PassengerCount as PassengerCount,\n",
+					"      SUM(TripDistanceMiles) as SumTripDistance_miles,\n",
+					"      AVG(TripDistanceMiles) as AvgTripDistance_miles\n",
+					"FROM  nyctaxi.trip\n",
+					"WHERE TripDistanceMiles > 0 AND PassengerCount > 0\n",
+					"GROUP BY PassengerCount\n",
+					"ORDER BY PassengerCount \"\"\" )\n",
+					"display(df)\n",
+					"df.write.saveAsTable(\"nyctaxi.PassengerCountStats\")"
+				],
+				"execution_count": 12
+			}
+		]
+	}
+}
