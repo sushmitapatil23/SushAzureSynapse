@@ -671,7 +671,7 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('workspaceName'), '/NotebookWriteCSV')]",
+			"name": "[concat(parameters('workspaceName'), '/NotebookReadWriteByPandas')]",
 			"type": "Microsoft.Synapse/workspaces/notebooks",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
@@ -687,7 +687,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "54c468d3-3332-43e3-a546-4256683adf64"
+						"spark.autotune.trackingId": "9572d2a6-e5b5-4ba5-a85f-430fb266833b"
 					}
 				},
 				"metadata": {
@@ -705,7 +705,82 @@
 				"cells": [
 					{
 						"cell_type": "code",
-						"metadata": {},
+						"metadata": {
+							"collapsed": false
+						},
+						"source": [
+							"import pandas\n",
+							"df = pandas.read_csv('abfss://azuresynapsesushcontainer@azuresynapsesushadlsgen2.dfs.core.windows.net/synapsedemo/EmployeeSalary.txt',\n",
+							"storage_options= {'account_key' : 'kSfTLRaUy6CSNVEyDeViq0STEzBKJ1HEFRLDRNwnUSHgahT1zi7lSbpe+eygxmfWJOKsctqk1i0h+AStR0qNjg==' })\n",
+							"\n",
+							"display(df)"
+						],
+						"outputs": [],
+						"execution_count": null
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"jupyter": {
+								"source_hidden": false,
+								"outputs_hidden": false
+							},
+							"nteract": {
+								"transient": {
+									"deleting": false
+								}
+							}
+						},
+						"source": [
+							"import pandas\n",
+							"df1 = pandas.DataFrame ({'id':[1,2], 'name':['Maheer','Wafa']})\n",
+							"df1.to_csv('abfss://azuresynapsesushcontainer@azuresynapsesushadlsgen2.dfs.core.windows.net/synapsedemo/EMP_WritePandas.csv',\n",
+							"storage_options= {'account_key' : 'kSfTLRaUy6CSNVEyDeViq0STEzBKJ1HEFRLDRNwnUSHgahT1zi7lSbpe+eygxmfWJOKsctqk1i0h+AStR0qNjg==' })\n",
+							"\n",
+							""
+						],
+						"outputs": [],
+						"execution_count": 11
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/NotebookWriteCSV')]",
+			"type": "Microsoft.Synapse/workspaces/notebooks",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"nbformat": 4,
+				"nbformat_minor": 2,
+				"sessionProperties": {
+					"driverMemory": "28g",
+					"driverCores": 4,
+					"executorMemory": "28g",
+					"executorCores": 4,
+					"numExecutors": 2,
+					"conf": {
+						"spark.dynamicAllocation.enabled": "false",
+						"spark.dynamicAllocation.minExecutors": "2",
+						"spark.dynamicAllocation.maxExecutors": "2",
+						"spark.autotune.trackingId": "3b61eec3-5b5e-4991-b5c9-32ba0671c38e"
+					}
+				},
+				"metadata": {
+					"saveOutput": true,
+					"enableDebugMode": false,
+					"kernelspec": {
+						"name": "synapse_pyspark",
+						"display_name": "python"
+					},
+					"language_info": {
+						"name": "python"
+					},
+					"sessionKeepAliveTimeout": 30
+				},
+				"cells": [
+					{
+						"cell_type": "code",
 						"source": [
 							"new_rows= [('Maheer','Male',5000),('Wafa','Male',3000)]\n",
 							"demo_df= spark.createDataFrame(new_rows,['Name','Gender','Salary'])\n",
