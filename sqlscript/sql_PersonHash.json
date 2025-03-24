@@ -1,0 +1,17 @@
+{
+	"name": "sql_PersonHash",
+	"properties": {
+		"content": {
+			"query": "CREATE TABLE [dbo].[Person]\n(\n    id int NOT NULL,\n    name nvarchar(50)\n)\nWITH\n(\n    DISTRIBUTION = HASH (id),\n    CLUSTERED COLUMNSTORE INDEX\n)\nGO\n\n-- Drop table [dbo].[Table]\n\ninsert into [dbo].[Person] values (1,'Susmita')\ninsert into [dbo].[Person] values (2,'Pandit')\n\nselect * from Person\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "master",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

@@ -1,0 +1,17 @@
+{
+	"name": "sql_tablePassengerCountStats",
+	"properties": {
+		"content": {
+			"query": "SELECT PassengerCount as PassengerCount,\n      SUM(TripDistanceMiles) as SumTripDistance_miles,\n      AVG(TripDistanceMiles) as AvgTripDistance_miles\nINTO dbo.PassengerCountStats\nFROM  dbo.NYCTaxiTripSmall\nWHERE TripDistanceMiles > 0 AND PassengerCount > 0\nGROUP BY PassengerCount;\n\nSELECT * FROM dbo.PassengerCountStats\nORDER BY PassengerCount;\n\n-- drop table dbo.PassengerCountStats",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "master",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

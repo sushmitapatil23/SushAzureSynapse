@@ -1,0 +1,17 @@
+{
+	"name": "sql_readParquetFileautoscript",
+	"properties": {
+		"content": {
+			"query": "-- This is auto-generated code\nSELECT\n    TOP 100 *\nFROM\n    OPENROWSET(\n        BULK 'https://azuresynapsesushadlsgen2.dfs.core.windows.net/azuresynapsesushcontainer/NYCTaxi/parquetfile/part-00000-ca9112b6-e14f-4e41-a0aa-5b4c3e7ec526-c000.snappy.parquet',\n        FORMAT = 'PARQUET'\n    ) AS [result]\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "master",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

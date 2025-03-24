@@ -1,0 +1,17 @@
+{
+	"name": "sql_top100PassengerCount",
+	"properties": {
+		"content": {
+			"query": "SELECT TOP (100) [PassengerCount]\n,[SumTripDistance_miles]\n,[AvgTripDistance_miles]\n FROM [nyctaxi].[dbo].[passengercountstats]",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "master",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

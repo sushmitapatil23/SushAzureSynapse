@@ -1,0 +1,17 @@
+{
+	"name": "sql_readParquetCSVFile",
+	"properties": {
+		"content": {
+			"query": "--- Read Parquet File\n\nselect top 10 *\nfrom openrowset(\n    bulk 'https://azuresynapsesushadlsgen2.dfs.core.windows.net/azuresynapsesushcontainer/synapsedemo/NYCTripSmall.parquet',\n    format = 'parquet') as rows\n\n--- Read CSV File with limited column\n\n    select Top 10 *\n    from openrowset(\n    bulk 'https://azuresynapsesushadlsgen2.dfs.core.windows.net/azuresynapsesushcontainer/synapsedemo/Employees.csv',\n    format = 'csv',\n    PARSER_VERSION = '2.0',\n    HEADER_ROW = True\n    )\n    WITH\n    (\n        Emp_Id int, Dept_Id int, Salary int\n    )\n    as rows\n\n\n--- Read CSV File\n\n    select Top 10 *\n    from openrowset(\n    bulk 'https://azuresynapsesushadlsgen2.dfs.core.windows.net/azuresynapsesushcontainer/synapsedemo/Employees.csv',\n    format = 'csv',\n    PARSER_VERSION = '2.0',\n    HEADER_ROW = True\n    )    as rows\n\n\n    --- Read CSV File from Blob Storage \n    select Top 10 *\n    from openrowset(\n    bulk 'https://storageaccountadfsush.blob.core.windows.net/source/customerPurchases.csv',\n    format = 'csv',\n    PARSER_VERSION = '2.0',\n    HEADER_ROW = True\n    )    as rows\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "master",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
