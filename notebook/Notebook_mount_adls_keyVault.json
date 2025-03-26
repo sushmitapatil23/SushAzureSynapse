@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "d12ccb1b-3601-4036-954d-82fcb542e463"
+				"spark.autotune.trackingId": "3b58a187-c948-40a0-a8e4-c45666775a30"
 			}
 		},
 		"metadata": {
@@ -68,7 +68,7 @@
 				"source": [
 					"jobId= mssparkutils.env.getJobId()\n",
 					"display(jobId)\n",
-					"df = spark.read.load('synfs:/' + jobId + '/test/Employees.csv',format='csv', header=True)\n",
+					"df = spark.read.load('synfs:/' + jobId + '/test2/Employees.csv',format='csv', header=True)\n",
 					"df.show()"
 				],
 				"execution_count": 4
