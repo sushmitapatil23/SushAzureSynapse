@@ -4,6 +4,12 @@
 	"parameters": {
 		"workspaceName": {
 			"value": "azuresynapsesushworkspace"
+		},
+		"AzureDataLakeStorage_synapse_accountKey": {
+			"value": ""
+		},
+		"AzureDataLakeStorage_synapse_properties_typeProperties_url": {
+			"value": "https://azuresynapsesushadlsgen2.dfs.core.windows.net/"
 		}
 	}
 }

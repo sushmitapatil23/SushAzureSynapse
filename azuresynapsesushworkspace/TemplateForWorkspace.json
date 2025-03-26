@@ -6,6 +6,14 @@
 			"type": "string",
 			"metadata": "Workspace name",
 			"defaultValue": "azuresynapsesushworkspace"
+		},
+		"AzureDataLakeStorage_synapse_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'AzureDataLakeStorage_synapse'"
+		},
+		"AzureDataLakeStorage_synapse_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://azuresynapsesushadlsgen2.dfs.core.windows.net/"
 		}
 	},
 	"variables": {
@@ -715,7 +723,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "9e8c333e-58f6-495e-97a1-326c492b8e38"
+						"spark.autotune.trackingId": "d0d2ec97-be7d-4782-8e90-cdfecc2f123d"
 					}
 				},
 				"metadata": {
@@ -1096,7 +1104,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "59b35972-86da-4467-ba81-6b20b0bdf672"
+						"spark.autotune.trackingId": "fb9db3fa-6554-4f58-8b16-82a21e623604"
 					}
 				},
 				"metadata": {
@@ -1311,7 +1319,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "bd700915-b59f-46e9-a1e2-ebcd098f8ab5"
+						"spark.autotune.trackingId": "35f2c8cd-f82c-4f06-9f64-a0c481c1ee56"
 					}
 				},
 				"metadata": {
@@ -1902,7 +1910,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "43b49ed9-8dc6-425a-a592-55d38cab6ae5"
+						"spark.autotune.trackingId": "a2246490-cf9b-48e9-931f-3a5d5dc87ade"
 					}
 				},
 				"metadata": {
@@ -2019,7 +2027,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "1793327c-dd1c-4ecc-8b91-ecc6d35f1be6"
+						"spark.autotune.trackingId": "a5338f68-3302-4cf2-8e05-d523202f579f"
 					}
 				},
 				"metadata": {
@@ -2129,7 +2137,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "e948108f-ffd9-4dee-8e65-aa3b2c21ea66"
+						"spark.autotune.trackingId": "0d3cc388-a480-4a76-aea3-e948c63367f4"
 					}
 				},
 				"metadata": {
@@ -2179,6 +2187,107 @@
 						],
 						"outputs": [],
 						"execution_count": 11
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/AzureDataLakeStorage_synapse')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('AzureDataLakeStorage_synapse_properties_typeProperties_url')]",
+					"accountKey": {
+						"type": "SecureString",
+						"value": "[parameters('AzureDataLakeStorage_synapse_accountKey')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/Notebook_mount_adls_linkedservice')]",
+			"type": "Microsoft.Synapse/workspaces/notebooks",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"nbformat": 4,
+				"nbformat_minor": 2,
+				"bigDataPool": {
+					"referenceName": "sparkpool1",
+					"type": "BigDataPoolReference"
+				},
+				"sessionProperties": {
+					"driverMemory": "28g",
+					"driverCores": 4,
+					"executorMemory": "28g",
+					"executorCores": 4,
+					"numExecutors": 2,
+					"conf": {
+						"spark.dynamicAllocation.enabled": "false",
+						"spark.dynamicAllocation.minExecutors": "2",
+						"spark.dynamicAllocation.maxExecutors": "2",
+						"spark.autotune.trackingId": "16b14a6e-aa82-4758-a3dd-54d1665e59d2"
+					}
+				},
+				"metadata": {
+					"saveOutput": true,
+					"enableDebugMode": false,
+					"kernelspec": {
+						"name": "synapse_pyspark",
+						"display_name": "Synapse PySpark"
+					},
+					"language_info": {
+						"name": "python"
+					},
+					"a365ComputeOptions": {
+						"id": "/subscriptions/74978c73-22ed-4fd5-9de2-85878197ac55/resourceGroups/AzureSynapseSushRG/providers/Microsoft.Synapse/workspaces/azuresynapsesushworkspace/bigDataPools/sparkpool1",
+						"name": "sparkpool1",
+						"type": "Spark",
+						"endpoint": "https://azuresynapsesushworkspace.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sparkpool1",
+						"auth": {
+							"type": "AAD",
+							"authResource": "https://dev.azuresynapse.net"
+						},
+						"sparkVersion": "3.4",
+						"nodeCount": 10,
+						"cores": 4,
+						"memory": 28,
+						"automaticScaleJobs": false
+					},
+					"sessionKeepAliveTimeout": 30
+				},
+				"cells": [
+					{
+						"cell_type": "code",
+						"metadata": {},
+						"source": [
+							"from notebookutils import mssparkutils\n",
+							"mssparkutils.fs.mount(\n",
+							"'abfss://azuresynapsesushcontainer@azuresynapsesushadlsgen2.dfs.core.windows.net',\n",
+							"'/test',\n",
+							"{'linkedService':'AzureDataLakeStorage_synapse'}\n",
+							"\n",
+							")\n",
+							""
+						],
+						"outputs": [],
+						"execution_count": 3
+					},
+					{
+						"cell_type": "code",
+						"metadata": {},
+						"source": [
+							"jobId= mssparkutils.env.getJobId()\n",
+							"display(jobId)\n",
+							"df = spark.read.load(\"synfs:/\" + jobId + \"/test/synapsedemo/Employees.csv\", format='csv', header=True)\n",
+							"df.show()"
+						],
+						"outputs": [],
+						"execution_count": 12
 					}
 				]
 			},
