@@ -1,0 +1,77 @@
+{
+	"name": "Notebook_mount_adls_accountkey",
+	"properties": {
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "sparkpool1",
+			"type": "BigDataPoolReference"
+		},
+		"sessionProperties": {
+			"driverMemory": "28g",
+			"driverCores": 4,
+			"executorMemory": "28g",
+			"executorCores": 4,
+			"numExecutors": 2,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "2",
+				"spark.dynamicAllocation.maxExecutors": "2",
+				"spark.autotune.trackingId": "2a60f247-4940-4713-8397-0216e9dd0f6e"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"enableDebugMode": false,
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "Synapse PySpark"
+			},
+			"language_info": {
+				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/74978c73-22ed-4fd5-9de2-85878197ac55/resourceGroups/AzureSynapseSushRG/providers/Microsoft.Synapse/workspaces/azuresynapsesushworkspace/bigDataPools/sparkpool1",
+				"name": "sparkpool1",
+				"type": "Spark",
+				"endpoint": "https://azuresynapsesushworkspace.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sparkpool1",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net"
+				},
+				"sparkVersion": "3.4",
+				"nodeCount": 10,
+				"cores": 4,
+				"memory": 28,
+				"automaticScaleJobs": false
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "code",
+				"source": [
+					"from notebookutils import mssparkutils\n",
+					"mssparkutils.fs.mount(\n",
+					"'abfss://azuresynapsesushcontainer@azuresynapsesushadlsgen2.dfs.core.windows.net',\n",
+					"'/test',\n",
+					"{'accountkey':'kSfTLRaUy6CSNVEyDeViq0STEzBKJ1HEFRLDRNwnUSHgahT1zi7lSbpe+eygxmfWJOKsctqk1i0h+AStR0qNjg=='}\n",
+					"\n",
+					")\n",
+					""
+				],
+				"execution_count": 1
+			},
+			{
+				"cell_type": "code",
+				"source": [
+					"jobId= mssparkutils.env.getJobId()\n",
+					"display(jobId)\n",
+					"df = spark.read.load('synfs:/' + jobId + '/test/Employees.csv',format='csv', header=True)\n",
+					"df.show()"
+				],
+				"execution_count": 4
+			}
+		]
+	}
+}
