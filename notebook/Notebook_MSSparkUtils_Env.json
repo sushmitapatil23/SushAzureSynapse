@@ -1,5 +1,5 @@
 {
-	"name": "Notebook_MSSparkUtils_Callrun_ENV",
+	"name": "Notebook_MSSparkUtils_Env",
 	"properties": {
 		"nbformat": 4,
 		"nbformat_minor": 2,
@@ -17,7 +17,7 @@
 				"spark.dynamicAllocation.enabled": "false",
 				"spark.dynamicAllocation.minExecutors": "2",
 				"spark.dynamicAllocation.maxExecutors": "2",
-				"spark.autotune.trackingId": "2a41b64a-29a7-4c49-aec6-c32bad6699e4"
+				"spark.autotune.trackingId": "ff23724a-84d0-46d1-8e35-c5b9f4919682"
 			}
 		},
 		"metadata": {
@@ -52,59 +52,22 @@
 				"cell_type": "code",
 				"source": [
 					"from notebookutils import mssparkutils\n",
-					"mssparkutils.notebook.run('/Notebook_MSSparkUtils_run', 90,{'firstName':'Pradeep' ,'lastname':'Patil'})"
-				],
-				"execution_count": 2
-			},
-			{
-				"cell_type": "code",
-				"source": [
 					"mssparkutils.env.help()\n",
 					""
 				],
-				"execution_count": 3
+				"execution_count": null
 			},
 			{
 				"cell_type": "code",
 				"source": [
-					"mssparkutils.env.getUserName()"
-				],
-				"execution_count": 8
-			},
-			{
-				"cell_type": "code",
-				"source": [
-					"mssparkutils.env.getUserId()"
-				],
-				"execution_count": 9
-			},
-			{
-				"cell_type": "code",
-				"source": [
-					"mssparkutils.env.getJobId()"
-				],
-				"execution_count": 10
-			},
-			{
-				"cell_type": "code",
-				"source": [
-					"mssparkutils.env.getWorkspaceName()"
-				],
-				"execution_count": 11
-			},
-			{
-				"cell_type": "code",
-				"source": [
-					"mssparkutils.env.getPoolName()"
-				],
-				"execution_count": 12
-			},
-			{
-				"cell_type": "code",
-				"source": [
+					"mssparkutils.env.getUserName()\n",
+					"mssparkutils.env.getUserId()\n",
+					"mssparkutils.env.getJobId()\n",
+					"mssparkutils.env.getWorkspaceName()\n",
+					"mssparkutils.env.getPoolName()\n",
 					"mssparkutils.env.getClusterId()"
 				],
-				"execution_count": 13
+				"execution_count": null
 			}
 		]
 	}
