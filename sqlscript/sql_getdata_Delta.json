@@ -1,0 +1,17 @@
+{
+	"name": "sql_getdata_Delta",
+	"properties": {
+		"content": {
+			"query": "select * from nyctaxi.dbo.persondelta",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "nyctaxi",
+				"poolName": "Built-in"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
