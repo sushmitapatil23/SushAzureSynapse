@@ -2,7 +2,7 @@
 	"name": "sql_getdata_Delta",
 	"properties": {
 		"content": {
-			"query": "select * from nyctaxi.dbo.persondelta",
+			"query": "select * from nyctaxi.dbo.persondelta\n\nselect * from \nOPENROWSET\n(\n    BULK 'abfss://azuresynapsesushcontainer@azuresynapsesushadlsgen2.dfs.core.windows.net/synapsedemo/delta/EmployeeSalary/' ,\n    FORMAT = 'DELTA'\n) as result\n",
 			"metadata": {
 				"language": "sql"
 			},
