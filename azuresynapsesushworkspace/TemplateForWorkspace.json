@@ -1356,6 +1356,121 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/Notebook_DeltaTable')]",
+			"type": "Microsoft.Synapse/workspaces/notebooks",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"nbformat": 4,
+				"nbformat_minor": 2,
+				"bigDataPool": {
+					"referenceName": "sparkpool1",
+					"type": "BigDataPoolReference"
+				},
+				"sessionProperties": {
+					"driverMemory": "28g",
+					"driverCores": 4,
+					"executorMemory": "28g",
+					"executorCores": 4,
+					"numExecutors": 2,
+					"conf": {
+						"spark.dynamicAllocation.enabled": "false",
+						"spark.dynamicAllocation.minExecutors": "2",
+						"spark.dynamicAllocation.maxExecutors": "2",
+						"spark.autotune.trackingId": "59a28e92-7a58-4ddf-869b-c8b70118a964"
+					}
+				},
+				"metadata": {
+					"saveOutput": true,
+					"enableDebugMode": false,
+					"kernelspec": {
+						"name": "synapse_pyspark",
+						"display_name": "Synapse PySpark"
+					},
+					"language_info": {
+						"name": "sql"
+					},
+					"a365ComputeOptions": {
+						"id": "/subscriptions/74978c73-22ed-4fd5-9de2-85878197ac55/resourceGroups/AzureSynapseSushRG/providers/Microsoft.Synapse/workspaces/azuresynapsesushworkspace/bigDataPools/sparkpool1",
+						"name": "sparkpool1",
+						"type": "Spark",
+						"endpoint": "https://azuresynapsesushworkspace.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/sparkpool1",
+						"auth": {
+							"type": "AAD",
+							"authResource": "https://dev.azuresynapse.net"
+						},
+						"sparkVersion": "3.4",
+						"nodeCount": 10,
+						"cores": 4,
+						"memory": 28
+					},
+					"sessionKeepAliveTimeout": 30
+				},
+				"cells": [
+					{
+						"cell_type": "code",
+						"metadata": {
+							"collapsed": false
+						},
+						"source": [
+							"CREATE TABLE nyctaxi.persondelta\n",
+							"(\n",
+							"id int,\n",
+							"name string\n",
+							")\n",
+							"USING DELTA"
+						],
+						"outputs": [],
+						"execution_count": 11
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"collapsed": false
+						},
+						"source": [
+							"Insert into nyctaxi.persondelta values (2,'Patil')"
+						],
+						"outputs": [],
+						"execution_count": 17
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"collapsed": false
+						},
+						"source": [
+							"select * from nyctaxi.persondelta"
+						],
+						"outputs": [],
+						"execution_count": 20
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"collapsed": false
+						},
+						"source": [
+							"Update nyctaxi.persondelta set name = 'Wafa' Where id = 1"
+						],
+						"outputs": [],
+						"execution_count": 15
+					},
+					{
+						"cell_type": "code",
+						"metadata": {
+							"collapsed": false
+						},
+						"source": [
+							"Delete from nyctaxi.persondelta Where id = 1"
+						],
+						"outputs": [],
+						"execution_count": 19
+					}
+				]
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/Notebook_MSSparkUtils')]",
 			"type": "Microsoft.Synapse/workspaces/notebooks",
 			"apiVersion": "2019-06-01-preview",
@@ -2645,6 +2760,18 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/dedicatedsushsqlpool')]",
+			"type": "Microsoft.Synapse/workspaces/sqlPools",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"collation": "SQL_Latin1_General_CP1_CI_AS",
+				"maxSizeBytes": 263882790666240,
+				"annotations": []
+			},
+			"dependsOn": [],
+			"location": "eastus"
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/sparkpool1')]",
 			"type": "Microsoft.Synapse/workspaces/bigDataPools",
 			"apiVersion": "2019-06-01-preview",
@@ -2670,19 +2797,27 @@
 			"location": "eastus"
 		},
 		{
-			"name": "[concat(parameters('workspaceName'), '/dedicatedsushsqlpool')]",
-			"type": "Microsoft.Synapse/workspaces/sqlPools",
+			"name": "[concat(parameters('workspaceName'), '/sql_getdata_Delta')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
-				"collation": "SQL_Latin1_General_CP1_CI_AS",
-				"maxSizeBytes": 263882790666240,
-				"annotations": []
+				"content": {
+					"query": "select * from nyctaxi.dbo.persondelta\n\nselect * from \nOPENROWSET\n(\n    BULK 'abfss://azuresynapsesushcontainer@azuresynapsesushadlsgen2.dfs.core.windows.net/synapsedemo/delta/EmployeeSalary/' ,\n    FORMAT = 'DELTA'\n) as result\n",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "nyctaxi",
+						"poolName": "Built-in"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
 			},
-			"dependsOn": [],
-			"location": "eastus"
+			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('workspaceName'), '/Notebook_DeltaTable')]",
+			"name": "[concat(parameters('workspaceName'), '/Notebook_getdata_Delta')]",
 			"type": "Microsoft.Synapse/workspaces/notebooks",
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
@@ -2702,7 +2837,7 @@
 						"spark.dynamicAllocation.enabled": "false",
 						"spark.dynamicAllocation.minExecutors": "2",
 						"spark.dynamicAllocation.maxExecutors": "2",
-						"spark.autotune.trackingId": "4f9d1223-ff06-4216-8d6e-f9d69e17fe90"
+						"spark.autotune.trackingId": "4ebadeee-395c-4527-849d-1c38f81ea7ab"
 					}
 				},
 				"metadata": {
@@ -2713,7 +2848,7 @@
 						"display_name": "Synapse PySpark"
 					},
 					"language_info": {
-						"name": "sql"
+						"name": "python"
 					},
 					"a365ComputeOptions": {
 						"id": "/subscriptions/74978c73-22ed-4fd5-9de2-85878197ac55/resourceGroups/AzureSynapseSushRG/providers/Microsoft.Synapse/workspaces/azuresynapsesushworkspace/bigDataPools/sparkpool1",
@@ -2736,62 +2871,37 @@
 					{
 						"cell_type": "code",
 						"metadata": {
-							"collapsed": false
+							"microsoft": {
+								"language": "python"
+							}
 						},
 						"source": [
-							"CREATE TABLE nyctaxi.persondelta\n",
-							"(\n",
-							"id int,\n",
-							"name string\n",
-							")\n",
-							"USING DELTA"
+							"%%pyspark\n",
+							"data = [(1,'Maheer'),(2,'Wafa')]\n",
+							"schema = ['id','name']\n",
+							"df = spark.createDataFrame(data,schema)\n",
+							"df.show()"
 						],
 						"outputs": [],
-						"execution_count": 11
+						"execution_count": 1
 					},
 					{
 						"cell_type": "code",
-						"metadata": {
-							"collapsed": false
-						},
+						"metadata": {},
 						"source": [
-							"Insert into nyctaxi.persondelta values (2,'Patil')"
+							"df.write.format('delta').save('abfss://azuresynapsesushcontainer@azuresynapsesushadlsgen2.dfs.core.windows.net/synapsedemo/delta/EmployeeSalary')"
 						],
 						"outputs": [],
-						"execution_count": 17
+						"execution_count": 2
 					},
 					{
 						"cell_type": "code",
-						"metadata": {
-							"collapsed": false
-						},
+						"metadata": {},
 						"source": [
-							"select * from nyctaxi.persondelta"
+							"spark.read.load('abfss://azuresynapsesushcontainer@azuresynapsesushadlsgen2.dfs.core.windows.net/synapsedemo/delta/EmployeeSalary/', format = 'delta').show()"
 						],
 						"outputs": [],
-						"execution_count": 20
-					},
-					{
-						"cell_type": "code",
-						"metadata": {
-							"collapsed": false
-						},
-						"source": [
-							"Update nyctaxi.persondelta set name = 'Wafa' Where id = 1"
-						],
-						"outputs": [],
-						"execution_count": 15
-					},
-					{
-						"cell_type": "code",
-						"metadata": {
-							"collapsed": false
-						},
-						"source": [
-							"Delete from nyctaxi.persondelta Where id = 1"
-						],
-						"outputs": [],
-						"execution_count": 19
+						"execution_count": 5
 					}
 				]
 			},
